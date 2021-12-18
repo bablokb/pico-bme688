@@ -12,6 +12,11 @@ cmake_minimum_required(VERSION 3.0)
 
 project(forced)
 
+# program configuration
+add_compile_definitions(HEATER_TEMP=300)
+add_compile_definitions(HEATER_DURATION=100)
+
+
 add_executable(${PROJECT_NAME} forced_mode.c)
 
 pico_set_program_name(${PROJECT_NAME} "pico-bme688-forced")

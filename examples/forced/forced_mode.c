@@ -65,8 +65,8 @@ int main(void)
 
     /* Check if rslt == BME68X_OK, report or handle if otherwise */
     heatr_conf.enable = BME68X_ENABLE;
-    heatr_conf.heatr_temp = 300;
-    heatr_conf.heatr_dur = 100;
+    heatr_conf.heatr_temp = HEATER_TEMP;
+    heatr_conf.heatr_dur = HEATER_DURATION;
     rslt = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &bme);
     bme68x_print_result("bme68x_set_heatr_conf", rslt);
 
