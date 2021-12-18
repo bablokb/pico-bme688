@@ -29,7 +29,7 @@ void pico_delay_us(uint32_t period, void *intf_ptr) {
 BME68X_INTF_RET_TYPE pico_i2c_read(uint8_t reg_addr, uint8_t *reg_data,
                                               uint32_t len, void *intf_ptr) {
   uint8_t dev_addr = *(uint8_t*)intf_ptr;
-  return i2c_read_blocking(I2C_PORT,dev_addr,reg_data,(size_t) len,true);  // true - finished with bus
+  return i2c_read_blocking(BME68X_PORT,dev_addr,reg_data,(size_t) len,true);  // true - finished with bus
 }
 
 // --------------------------------------------------------------------------
@@ -39,7 +39,7 @@ BME68X_INTF_RET_TYPE pico_i2c_read(uint8_t reg_addr, uint8_t *reg_data,
 BME68X_INTF_RET_TYPE pico_i2c_write(uint8_t reg_addr, const uint8_t *reg_data,
                                                   uint32_t len, void *intf_ptr) {
   uint8_t dev_addr = *(uint8_t*)intf_ptr;
-  return i2c_write_blocking(I2C_PORT,dev_addr,reg_data,(size_t)len,true);
+  return i2c_write_blocking(BME68X_PORT,dev_addr,reg_data,(size_t)len,true);
 }
 
 // --------------------------------------------------------------------------
@@ -50,11 +50,11 @@ int8_t bme68x_interface_init(struct bme68x_dev *bme) {
   int8_t rslt = BME68X_OK;
   if (bme) {
      // I2C Initialisation. Using it at 400Khz.
-    i2c_init(I2C_PORT,400*1000);
-    gpio_set_function(I2C_SDA,GPIO_FUNC_I2C);
-    gpio_set_function(I2C_SCL,GPIO_FUNC_I2C);
-    gpio_pull_up(I2C_SDA);
-    gpio_pull_up(I2C_SCL);
+    i2c_init(BME68X_PORT,400*1000);
+    gpio_set_function(BME68X_SDA,GPIO_FUNC_I2C);
+    gpio_set_function(BME68X_SCL,GPIO_FUNC_I2C);
+    gpio_pull_up(BME68X_SDA);
+    gpio_pull_up(BME68X_SCL);
 
     // device-structure init
     bme->read     = pico_i2c_read;

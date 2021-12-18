@@ -26,9 +26,9 @@ project(pico-bme688 C CXX ASM)
 pico_sdk_init()
 
 # defines for the library
-add_compile_definitions(I2C_PORT=i2c0)
-add_compile_definitions(I2C_SDA=8)
-add_compile_definitions(I2C_SCL=9)
+add_compile_definitions(BME68X_PORT=i2c0)
+add_compile_definitions(BME68X_SDA=8)
+add_compile_definitions(BME68X_SCL=9)
 
 # add preprocessor-constant DEBUG for Debug-builds
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
