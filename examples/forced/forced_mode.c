@@ -3,7 +3,7 @@
 //
 // This is a slightly modified version of the Bosch version (examples/forced/forced_mode.c)
 // distributed with https://github.com/BoschSensortec/BME68x-Sensor-API
-// 
+//
 // Adapted to run on the Raspberry Pi Pico
 //
 // Author: Bernhard Bablok
@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
-#include "bme68x_pico.h"
+#include "bme68x_platform.h"
 
 /***********************************************************************/
 /*                         Macros                                      */
@@ -48,7 +48,7 @@ int main(void)
 
     stdio_init_all();
 
-    rslt = bme68x_interface_init(&bme);
+    rslt = platform_interface_init(&bme);
     bme68x_print_result("bme68x_interface_init", rslt);
 
     rslt = bme68x_init(&bme);
