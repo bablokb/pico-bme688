@@ -14,7 +14,7 @@ project(forced)
 
 add_executable(${PROJECT_NAME} forced_mode.c)
 
-pico_set_program_name(${PROJECT_NAME} "pico-st7735")
+pico_set_program_name(${PROJECT_NAME} "pico-bme688-forced")
 pico_set_program_version(${PROJECT_NAME} "0.1")
 
 pico_enable_stdio_uart(${PROJECT_NAME} 1)
