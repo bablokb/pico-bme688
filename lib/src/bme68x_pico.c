@@ -6,10 +6,13 @@
 // https://github.com/bablokb/pico-bme688
 // --------------------------------------------------------------------------
 
+#include <stdio.h>
 #include "bme68x_pico.h"
-#include <bme68x.h>
+#include "bme68x.h"
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+
+static uint8_t _bme68x_dev_addr = BME68X_I2C_ADDR_LOW;
 
 // --------------------------------------------------------------------------
 // delay function for pico
@@ -47,19 +50,18 @@ int8_t bme68x_interface_init(struct bme68x_dev *bme) {
   int8_t rslt = BME68X_OK;
   if (bme) {
      // I2C Initialisation. Using it at 400Khz.
-    i2c_init(I2C_PORT,400*1000);    
+    i2c_init(I2C_PORT,400*1000);
     gpio_set_function(I2C_SDA,GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL,GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SDA);
     gpio_pull_up(I2C_SCL);
 
     // device-structure init
-    dev_addr      = BME68X_I2C_ADDR_LOW;
     bme->read     = pico_i2c_read;
     bme->write    = pico_i2c_write;
     bme->intf     = BME68X_I2C_INTF;
     bme->delay_us = pico_delay_us;
-    bme->intf_ptr = &dev_addr;
+    bme->intf_ptr = &_bme68x_dev_addr;
     bme->amb_temp = 20;              // initial ambient temperature in deg C
   } else {
     rslt = BME68X_E_NULL_PTR;
