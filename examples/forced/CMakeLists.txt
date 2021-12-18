@@ -22,7 +22,7 @@ pico_enable_stdio_usb(${PROJECT_NAME} 0)
 
 # add libraries
 target_link_libraries(${PROJECT_NAME} PUBLIC pico_stdlib)
-target_link_libraries(${PROJECT_NAME} PUBLIC libbme68x)
+target_link_libraries(${PROJECT_NAME} PUBLIC bme68x)
 target_link_libraries(${PROJECT_NAME} PUBLIC hardware_i2c)
 
 pico_add_extra_outputs(${PROJECT_NAME})
