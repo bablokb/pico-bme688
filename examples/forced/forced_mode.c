@@ -19,97 +19,83 @@
  */
 
 #include <stdio.h>
+#include <math.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "bme68x_platform.h"
 
-/***********************************************************************/
-/*                         Macros                                      */
-/***********************************************************************/
+static float alt_fac;
 
-/* Macro for count of samples to be displayed */
-#define SAMPLE_COUNT  UINT16_C(300)
+// ---------------------------------------------------------------------------
+// print sensor data to console
 
-/***********************************************************************/
-/*                         Test code                                   */
-/***********************************************************************/
+void print_data(uint32_t ts, struct bme68x_data *data) {
+  float temp, press, hum;
 
-int main(void)
-{
-    struct bme68x_dev bme;
-    int8_t rslt;
-    struct bme68x_conf conf;
-    struct bme68x_heatr_conf heatr_conf;
-    struct bme68x_data data;
-    uint32_t del_period;
-    uint32_t time_ms = 0;
-    uint8_t n_fields;
-    uint16_t sample_count = 1;
+  temp  = 0.01f  * data->temperature;
+  press = 0.01f  * data->pressure/alt_fac;
+  hum   = 0.001f * data->humidity;
+  printf("%lu ms, %0.1f deg C, %0.0f hPa, %0.0f%%, %lu Ohm, 0x%x\n",
+         1000*ts, temp, press, hum, data->gas_resistance,data->status);
+}
 
-    stdio_init_all();
+// ---------------------------------------------------------------------------
+// main loop: read data and print data
 
-    rslt = platform_interface_init(&bme);
-    bme68x_print_result("bme68x_interface_init", rslt);
+int main(void) {
+  struct bme68x_dev bme;
+  int8_t rslt;
+  struct bme68x_conf conf;
+  struct bme68x_heatr_conf heatr_conf;
+  struct bme68x_data data;
+  uint32_t del_period;
+  uint32_t time_ms = 0;
+  uint8_t n_fields;
+  uint16_t sample_count = 1;
 
-    rslt = bme68x_init(&bme);
-    bme68x_print_result("bme68x_init", rslt);
+  stdio_init_all();
+  alt_fac = pow(1.0-ALTITUDE_AT_LOC/44330.0, 5.255);
 
-    /* Check if rslt == BME68X_OK, report or handle if otherwise */
-    conf.filter = BME68X_FILTER_OFF;
-    conf.odr = BME68X_ODR_NONE;
-    conf.os_hum = BME68X_OS_16X;
-    conf.os_pres = BME68X_OS_1X;
-    conf.os_temp = BME68X_OS_2X;
-    rslt = bme68x_set_conf(&conf, &bme);
-    bme68x_print_result("bme68x_set_conf", rslt);
+  rslt = platform_interface_init(&bme);
+  bme68x_print_result("bme68x_interface_init", rslt);
 
-    /* Check if rslt == BME68X_OK, report or handle if otherwise */
-    heatr_conf.enable = BME68X_ENABLE;
-    heatr_conf.heatr_temp = HEATER_TEMP;
-    heatr_conf.heatr_dur = HEATER_DURATION;
-    rslt = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &bme);
-    bme68x_print_result("bme68x_set_heatr_conf", rslt);
+  rslt = bme68x_init(&bme);
+  bme68x_print_result("bme68x_init", rslt);
 
-    printf("Sample, TimeStamp(ms), Temperature(deg C), Pressure(Pa), Humidity(%%), Gas resistance(ohm), Status\n");
+  conf.filter  = BME68X_FILTER_OFF;
+  conf.odr     = BME68X_ODR_NONE;
+  conf.os_hum  = BME68X_OS_16X;
+  conf.os_pres = BME68X_OS_1X;
+  conf.os_temp = BME68X_OS_2X;
+  rslt = bme68x_set_conf(&conf, &bme);
+  bme68x_print_result("bme68x_set_conf", rslt);
 
-    while (sample_count <= SAMPLE_COUNT)
-    {
-        rslt = bme68x_set_op_mode(BME68X_FORCED_MODE, &bme);
-        bme68x_print_result("bme68x_set_op_mode", rslt);
+  heatr_conf.enable     = BME68X_ENABLE;
+  heatr_conf.heatr_temp = HEATER_TEMP;
+  heatr_conf.heatr_dur  = HEATER_DURATION;
+  rslt = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &bme);
+  bme68x_print_result("bme68x_set_heatr_conf", rslt);
 
-        /* Calculate delay period in microseconds */
-        del_period = bme68x_get_meas_dur(BME68X_FORCED_MODE, &conf, &bme) + (heatr_conf.heatr_dur * 1000);
-        bme.delay_us(del_period, bme.intf_ptr);
+  printf("TimeStamp(ms), Temperature(deg C), Pressure(Pa), Humidity(%%), Gas resistance(ohm), Status\n");
 
-        time_ms = to_ms_since_boot(get_absolute_time());
+  while (true) {
+    rslt = bme68x_set_op_mode(BME68X_FORCED_MODE, &bme);
+    bme68x_print_result("bme68x_set_op_mode", rslt);
 
-        /* Check if rslt == BME68X_OK, report or handle if otherwise */
-        rslt = bme68x_get_data(BME68X_FORCED_MODE, &data, &n_fields, &bme);
-        bme68x_print_result("bme68x_get_data", rslt);
+    /* Calculate delay period in microseconds */
+    del_period = bme68x_get_meas_dur(BME68X_FORCED_MODE, &conf, &bme) +
+      (heatr_conf.heatr_dur * 1000);
+    bme.delay_us(del_period, bme.intf_ptr);
 
-        if (n_fields)
-        {
-#ifdef BME68X_USE_FPU
-            printf("%u, %lu, %.2f, %.2f, %.2f, %.2f, 0x%x\n",
-                   sample_count,
-                   (long unsigned int)time_ms,
-                   data.temperature,
-                   data.pressure,
-                   data.humidity,
-                   data.gas_resistance,
-                   data.status);
-#else
-            printf("%u, %lu, %d, %lu, %lu, %lu, 0x%x\n",
-                   sample_count,
-                   (long unsigned int)time_ms,
-                   (data.temperature / 100),
-                   (long unsigned int)data.pressure,
-                   (long unsigned int)(data.humidity / 1000),
-                   (long unsigned int)data.gas_resistance,
-                   data.status);
-#endif
-            sample_count++;
-        }
+    time_ms = platform_get_timestamp();
+
+    rslt = bme68x_get_data(BME68X_FORCED_MODE, &data, &n_fields, &bme);
+    bme68x_print_result("bme68x_get_data", rslt);
+
+    if (n_fields) {
+      print_data(time_ms,&data);
     }
-    return rslt;
+    platform_sleep_ms(1000*UPDATE_INTERVAL);
+  }
+  return rslt;
 }
