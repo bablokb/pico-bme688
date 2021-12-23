@@ -26,9 +26,11 @@ project(pico-bme688 C CXX ASM)
 pico_sdk_init()
 
 # defines for the library
+add_compile_definitions(BME68X_DO_NOT_USE_FPU)
 add_compile_definitions(BME68X_PORT=i2c1)
 add_compile_definitions(BME68X_SDA=2)
 add_compile_definitions(BME68X_SCL=3)
+add_compile_definitions(ALTITUDE_AT_LOC=520)
 
 # add preprocessor-constant DEBUG for Debug-builds
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
