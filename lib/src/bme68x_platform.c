@@ -12,7 +12,15 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
-static uint8_t _bme68x_dev_addr = BME68X_I2C_ADDR_LOW;
+static uint8_t _bme68x_dev_addr = BME68X_I2C_ADDR_HIGH;
+
+// --------------------------------------------------------------------------
+// return timestamp (pico: elapsed ms since boot)
+//
+
+uint32_t platform_get_timestamp() {
+  return to_ms_since_boot(get_absolute_time());
+}
 
 // --------------------------------------------------------------------------
 // delay function for pico
@@ -29,7 +37,7 @@ void platform_delay_us(uint32_t period, void *intf_ptr) {
 BME68X_INTF_RET_TYPE platform_i2c_read(uint8_t reg_addr, uint8_t *reg_data,
                                               uint32_t len, void *intf_ptr) {
   uint8_t dev_addr = *(uint8_t*)intf_ptr;
-  return i2c_read_blocking(BME68X_PORT,dev_addr,reg_data,(size_t) len,true);  // true - finished with bus
+  return len != i2c_read_blocking(BME68X_PORT,dev_addr,reg_data,(size_t) len,true);  // true - finished with bus
 }
 
 // --------------------------------------------------------------------------
@@ -39,7 +47,7 @@ BME68X_INTF_RET_TYPE platform_i2c_read(uint8_t reg_addr, uint8_t *reg_data,
 BME68X_INTF_RET_TYPE platform_i2c_write(uint8_t reg_addr, const uint8_t *reg_data,
                                                   uint32_t len, void *intf_ptr) {
   uint8_t dev_addr = *(uint8_t*)intf_ptr;
-  return i2c_write_blocking(BME68X_PORT,dev_addr,reg_data,(size_t)len,true);
+  return len != i2c_write_blocking(BME68X_PORT,dev_addr,reg_data,(size_t)len,true);
 }
 
 // --------------------------------------------------------------------------
