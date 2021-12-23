@@ -15,6 +15,7 @@ project(forced)
 # program configuration
 add_compile_definitions(HEATER_TEMP=300)
 add_compile_definitions(HEATER_DURATION=100)
+add_compile_definitions(UPDATE_INTERVAL=10)
 
 
 add_executable(${PROJECT_NAME} forced_mode.c)
