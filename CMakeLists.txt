@@ -28,8 +28,10 @@ pico_sdk_init()
 # defines for the library
 add_compile_definitions(BME68X_DO_NOT_USE_FPU)
 add_compile_definitions(BME68X_PORT=i2c1)
+add_compile_definitions(BME68X_ADDR=BME68X_I2C_ADDR_HIGH)
 add_compile_definitions(BME68X_SDA=2)
 add_compile_definitions(BME68X_SCL=3)
+#add_compile_definitions(BME68X_I2C_PU)      # use builtin-pullups
 add_compile_definitions(ALTITUDE_AT_LOC=520)
 
 # add preprocessor-constant DEBUG for Debug-builds
