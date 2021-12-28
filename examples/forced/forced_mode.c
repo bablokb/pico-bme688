@@ -35,8 +35,13 @@ void print_data(uint32_t ts, struct bme68x_data *data) {
   temp  = 0.01f  * data->temperature;
   press = 0.01f  * data->pressure/alt_fac;
   hum   = 0.001f * data->humidity;
+  #ifdef WITH_UNITS
   printf("%lu ms, %0.1f deg C, %0.0f hPa, %0.0f%%, %lu Ohm, 0x%x\n",
-         ts, temp, press, hum, data->gas_resistance,data->status);
+         ts,temp,press,hum,data->gas_resistance,data->status);
+  #else
+  printf("%lu,%0.1f,%0.0f,%0.0f,%lu\n",
+         ts,temp,press,hum, data->gas_resistance);
+  #endif
 }
 
 // ---------------------------------------------------------------------------
@@ -76,7 +81,11 @@ int main(void) {
   rslt = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &bme);
   bme68x_print_result("bme68x_set_heatr_conf", rslt);
 
+  #ifdef WITH_UNITS
   printf("TimeStamp(ms), Temperature(deg C), Pressure(Pa), Humidity(%%), Gas resistance(ohm), Status\n");
+  #else
+  printf("TimeStamp(ms),Temp(deg C),Press(Pa),Hum(%%),Gas(ohm)\n");
+  #endif
 
   while (true) {
     rslt = bme68x_set_op_mode(BME68X_FORCED_MODE, &bme);
