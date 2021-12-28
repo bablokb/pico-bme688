@@ -36,7 +36,7 @@ void print_data(uint32_t ts, struct bme68x_data *data) {
   press = 0.01f  * data->pressure/alt_fac;
   hum   = 0.001f * data->humidity;
   printf("%lu ms, %0.1f deg C, %0.0f hPa, %0.0f%%, %lu Ohm, 0x%x\n",
-         1000*ts, temp, press, hum, data->gas_resistance,data->status);
+         ts, temp, press, hum, data->gas_resistance,data->status);
 }
 
 // ---------------------------------------------------------------------------
