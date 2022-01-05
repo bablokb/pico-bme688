@@ -43,3 +43,4 @@ endif()
 
 add_subdirectory(lib)
 add_subdirectory(examples/forced)
+add_subdirectory(examples/parallel)
