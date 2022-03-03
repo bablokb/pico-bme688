@@ -25,14 +25,25 @@ project(pico-bme688 C CXX ASM)
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-# defines for the library
-add_compile_definitions(BME68X_DO_NOT_USE_FPU)
-add_compile_definitions(BME68X_PORT=i2c1)
-add_compile_definitions(BME68X_ADDR=BME68X_I2C_ADDR_HIGH)
-add_compile_definitions(BME68X_SDA=2)
-add_compile_definitions(BME68X_SCL=3)
-#add_compile_definitions(BME68X_I2C_PU)      # use builtin-pullups
-add_compile_definitions(ALTITUDE_AT_LOC=520)
+# defines for the library (override if necessary)
+set(BME68X_PORT     "i2c1"                 CACHE STRING "i2c-port name")
+set(BME68X_SDA      "2"                    CACHE STRING "SDA pin-number for BME68X")
+set(BME68X_SCL      "3"                    CACHE STRING "SCL pin-number for BME68X")
+set(BME68X_ADDR     "BME68X_I2C_ADDR_HIGH" CACHE STRING "BME68x address constant")
+set(BME68X_I2C_PU   "NO_BME68X_I2C_PU"     CACHE STRING "use (NO) builtin pullups")
+
+
+message(STATUS "Port:    ${BME68X_PORT}")
+message(STATUS "Address: ${BME68X_ADDR}")
+message(STATUS "SDA-pin: ${BME68X_SDA}")
+message(STATUS "SCL-pin: ${BME68X_SCL}")
+message(STATUS "Pullups: ${BME68X_I2C_PU}")
+
+add_compile_definitions(BME68X_PORT=${BME68X_PORT})
+add_compile_definitions(BME68X_ADDR=${BME68X_ADDR})
+add_compile_definitions(BME68X_SDA=${BME68X_SDA})
+add_compile_definitions(BME68X_SCL=${BME68X_SCL})
+add_compile_definitions(${BME68X_I2C_PU})
 
 # add preprocessor-constant DEBUG for Debug-builds
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
