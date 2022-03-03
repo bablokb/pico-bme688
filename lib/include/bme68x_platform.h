@@ -9,7 +9,10 @@
 #ifndef _BME68X_PLATFORM_H
 #define _BME68X_PLATFORM_H
 
+#ifndef BME68X_DO_NOT_USE_FPU
 #define BME68X_DO_NOT_USE_FPU
+#endif
+
 #include <bme68x.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"

@@ -39,6 +39,7 @@ message(STATUS "SDA-pin: ${BME68X_SDA}")
 message(STATUS "SCL-pin: ${BME68X_SCL}")
 message(STATUS "Pullups: ${BME68X_I2C_PU}")
 
+add_compile_definitions(BME68X_DO_NOT_USE_FPU)
 add_compile_definitions(BME68X_PORT=${BME68X_PORT})
 add_compile_definitions(BME68X_ADDR=${BME68X_ADDR})
 add_compile_definitions(BME68X_SDA=${BME68X_SDA})
